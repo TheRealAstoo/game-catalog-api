@@ -1,11 +1,13 @@
 type Game = {
   id: number;
   name: string;
-  platform_id: number;
+  platform_slug: string;
+  slug: string;
 };
 type Platform = {
   id: number;
   name: string;
+  slug: string;
 };
 
 let lastGameId = 0;
@@ -35,35 +37,40 @@ export function getGames(): Game[] {
   return GAMES;
 }
 
-export function addGame(name: string, platformId: number): Game {
-  const platform = PLATFORMS.find((platform) => platform.id === platformId);
+export function addGame(
+  name: string,
+  slug: string,
+  platformSlug: string
+): Game {
+  const platform = PLATFORMS.find((platform) => platform.slug === platformSlug);
   if (platform) {
     const newId = lastGameId + 1;
     lastGameId = newId;
     const game = {
       id: newId,
       name,
-      platform_id: platformId,
+      platform_slug: platformSlug,
+      slug: slug,
     };
     GAMES.push(game);
     console.log(`added a game: ${name}, id: ${game.id}`);
     return game;
   } else {
-    throw new PlatformNotFoundError(`Platform ${platformId} does not exist`);
+    throw new PlatformNotFoundError(`Platform ${platformSlug} does not exist`);
   }
 }
 
-export function removeGame(gameId: number): void {
-  const removedGame = GAMES.find((game) => game.id === gameId);
+export function removeGame(gameSlug: string): void {
+  const removedGame = GAMES.find((game) => game.slug === gameSlug);
   if (removedGame) {
     console.log(`removed a game: ${removedGame.id}`);
-    GAMES = GAMES.filter((game) => game.id !== gameId);
+    GAMES = GAMES.filter((game) => game.slug !== gameSlug);
   }
 }
 
-export function updateGame(gameId: number, updatedGame: Game): Game {
+export function updateGame(gameSlug: string, updatedGame: Game): Game {
   GAMES = GAMES.map((game) => {
-    if (game.id === gameId) {
+    if (game.slug === gameSlug) {
       console.log(`updated a game: ${game.id}`);
       return { ...updatedGame, id: game.id };
     }
@@ -72,24 +79,25 @@ export function updateGame(gameId: number, updatedGame: Game): Game {
   return updatedGame;
 }
 
-export function findGame(gameId: number): Game | undefined {
-  return getGames().find((game) => game.id === gameId);
+export function findGame(gameSlug: string): Game | undefined {
+  return getGames().find((game) => game.slug === gameSlug);
 }
 
-export function findGamesByPlatformId(platformId: number): Game[] {
-  return getGames().filter((game) => game.platform_id === platformId);
+export function findGamesByPlatformId(platformSlug: string): Game[] {
+  return getGames().filter((game) => game.platform_slug === platformSlug);
 }
 
 export function getPlatforms(): Platform[] {
   return PLATFORMS;
 }
 
-export function addPlatform(name: string): Platform {
+export function addPlatform(name: string, slug: string): Platform {
   const newId = lastPlatformId + 1;
   lastPlatformId = newId;
   const platform = {
     id: newId,
     name,
+    slug,
   };
   PLATFORMS.push(platform);
 
@@ -97,23 +105,23 @@ export function addPlatform(name: string): Platform {
   return platform;
 }
 
-export function removePlatform(platformId: number): void {
+export function removePlatform(platformSlug: string): void {
   const removedPlatform = PLATFORMS.find(
-    (platform) => platform.id === platformId
+    (platform) => platform.slug === platformSlug
   );
   if (removedPlatform) {
     console.log(`removed a platform: ${removedPlatform.id}`);
 
-    PLATFORMS = PLATFORMS.filter((platform) => platform.id !== platformId);
+    PLATFORMS = PLATFORMS.filter((platform) => platform.slug !== platformSlug);
     const gamesForThatPlatform = GAMES.filter(
-      (game) => game.platform_id === platformId
+      (game) => game.platform_slug === platformSlug
     );
-    gamesForThatPlatform.forEach((game) => removeGame(game.id));
+    gamesForThatPlatform.forEach((game) => removeGame(game.slug));
   }
 }
 
-export function findPlatform(platformId: number): Platform | undefined {
-  return getPlatforms().find((platform) => platform.id === platformId);
+export function findPlatform(platformSlug: string): Platform | undefined {
+  return getPlatforms().find((platform) => platform.slug === platformSlug);
 }
 
 export function findPlatformByName(platformName: string): Platform | undefined {
@@ -121,11 +129,11 @@ export function findPlatformByName(platformName: string): Platform | undefined {
 }
 
 export function updatePlatform(
-  platformId: number,
+  platformSlug: string,
   updatedPlatform: Platform
 ): Platform {
   PLATFORMS = PLATFORMS.map((platform) => {
-    if (platform.id === platformId) {
+    if (platform.slug === platformSlug) {
       console.log(`updated a plateform: ${platform.id}`);
       return { ...updatedPlatform, id: platform.id };
     }

@@ -45,62 +45,64 @@ afterEach(async () => {
   }
 });
 
-describe("Platforms: Update", () => {
+describe("Games: Delete", () => {
   beforeEach(() => {
     return fetch("http://localhost:3001/platforms", {
       method: "POST",
       body: JSON.stringify({ name: "Nintendo Switch" }),
       headers: { "Content-Type": "application/json" },
-    }).then(() =>
-      fetch("http://localhost:3001/platforms", {
-        method: "POST",
-        body: JSON.stringify({ name: "Nintendo 3DS" }),
-        headers: { "Content-Type": "application/json" },
-      })
-    );
+    })
+      .then(() =>
+        fetch("http://localhost:3001/platforms", {
+          method: "POST",
+          body: JSON.stringify({ name: "Nintendo 3DS" }),
+          headers: { "Content-Type": "application/json" },
+        })
+      )
+      .then(() =>
+        fetch("http://localhost:3001/games", {
+          method: "POST",
+          body: JSON.stringify({
+            name: "Hades",
+            platform_slug: "nintendo-switch",
+          }),
+          headers: { "Content-Type": "application/json" },
+        })
+      )
+      .then(() =>
+        fetch("http://localhost:3001/games", {
+          method: "POST",
+          body: JSON.stringify({
+            name: "Mario Kart 7",
+            platform_slug: "nintendo-3ds",
+          }),
+          headers: { "Content-Type": "application/json" },
+        })
+      );
   });
 
-  test("should be able to update a platform that exists", () => {
-    expect.assertions(1);
+  test("should be able to delete a game", () => {
+    expect.assertions(2);
 
-    return fetch("http://localhost:3001/platforms/nintendo-switch", {
-      method: "PUT",
-      body: JSON.stringify({ name: "Super Nintendo Switch" }),
-      headers: { "Content-Type": "application/json" },
+    return fetch("http://localhost:3001/games/hades", {
+      method: "DELETE",
     })
-      .then(() => fetch("http://localhost:3001/platforms/nintendo-switch"))
-      .then((response) => response.json())
-      .then((platform) => {
-        expect(platform).toMatchObject({ name: "Super Nintendo Switch" });
+      .then((response) => {
+        expect(response.status).toBe(204);
+      })
+      .then(() => fetch("http://localhost:3001/platforms/hades"))
+      .then((response) => {
+        expect(response.status).toBe(404);
       });
   });
 
-  test("should return a 404 if we try to update a platform that does not exist", () => {
+  test("should return a 404 when trying to delete a game that does not exist", () => {
     expect.assertions(1);
 
-    return fetch("http://localhost:3001/platforms/nintendo-x", {
-      method: "PUT",
-      body: JSON.stringify({ name: "Super Nintendo Switch" }),
-      headers: { "Content-Type": "application/json" },
+    return fetch("http://localhost:3001/platforms/super-final-fantasy", {
+      method: "DELETE",
     }).then((response) => {
       expect(response.status).toBe(404);
     });
-  });
-
-  test("should return a 400 if we try to update a platform without a name", () => {
-    expect.assertions(2);
-
-    return fetch("http://localhost:3001/platforms/nintendo-switch", {
-      method: "PUT",
-      body: JSON.stringify({}),
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((response) => {
-        expect(response.status).toBe(400);
-        return response.json();
-      })
-      .then((body) => {
-        expect(body.missing).toContain("name");
-      });
   });
 });

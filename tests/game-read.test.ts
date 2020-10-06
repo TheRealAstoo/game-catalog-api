@@ -45,52 +45,78 @@ afterEach(async () => {
   }
 });
 
-describe("Platforms: Read", () => {
+describe("Games: Read", () => {
   beforeEach(() => {
     return fetch("http://localhost:3001/platforms", {
       method: "POST",
       body: JSON.stringify({ name: "Nintendo Switch" }),
       headers: { "Content-Type": "application/json" },
-    }).then(() =>
-      fetch("http://localhost:3001/platforms", {
-        method: "POST",
-        body: JSON.stringify({ name: "Nintendo 3DS" }),
-        headers: { "Content-Type": "application/json" },
-      })
-    );
+    })
+      .then(() =>
+        fetch("http://localhost:3001/platforms", {
+          method: "POST",
+          body: JSON.stringify({ name: "Nintendo 3DS" }),
+          headers: { "Content-Type": "application/json" },
+        })
+      )
+      .then(() =>
+        fetch("http://localhost:3001/games", {
+          method: "POST",
+          body: JSON.stringify({
+            name: "Hades",
+            platform_slug: "nintendo-switch",
+          }),
+          headers: { "Content-Type": "application/json" },
+        })
+      )
+      .then(() =>
+        fetch("http://localhost:3001/games", {
+          method: "POST",
+          body: JSON.stringify({
+            name: "Mario Kart 7",
+            platform_slug: "nintendo-3ds",
+          }),
+          headers: { "Content-Type": "application/json" },
+        })
+      );
   });
 
-  test("It should return an array of platforms when listing all the platforms", () => {
+  test("It should return an array of games when listing all the games", () => {
     expect.assertions(2);
 
-    return fetch("http://localhost:3001/platforms")
+    return fetch("http://localhost:3001/games")
       .then((response) => response.json())
-      .then((platforms) => {
-        expect(platforms.length).toBe(2);
-        expect(platforms).toMatchObject([
-          { name: "Nintendo Switch", slug: "nintendo-switch" },
-          { name: "Nintendo 3DS", slug: "nintendo-3ds" },
+      .then((games) => {
+        expect(games.length).toBe(2);
+        expect(games).toMatchObject([
+          { name: "Hades", platform_slug: "nintendo-switch", slug: "hades" },
+          {
+            name: "Mario Kart 7",
+            platform_slug: "nintendo-3ds",
+            slug: "mario-kart-7",
+          },
         ]);
       });
   });
 
-  test("It should return a platform when getting one from its slug", () => {
+  test("It should return a game when getting one from its slug", () => {
     expect.assertions(1);
 
-    return fetch("http://localhost:3001/platforms/nintendo-switch")
+    return fetch("http://localhost:3001/games/hades")
       .then((response) => response.json())
-      .then((platform) => {
-        expect(platform).toMatchObject({
-          name: "Nintendo Switch",
-          slug: "nintendo-switch",
+      .then((game) => {
+        expect(game).toMatchObject({
+          name: "Hades",
+          platform_slug: "nintendo-switch",
+          slug: "hades",
         });
       });
   });
 
-  test("It should return a 404 if the platform does not exist", () => {
+  test("It should return a 404 if the game does not exist", () => {
     expect.assertions(1);
 
-    return fetch("http://localhost:3001/platforms/nintendo-x").then(
+    return fetch("http://localhost:3001/games/super-final-fantasy").then(
       (response) => {
         expect(response.status).toBe(404);
       }

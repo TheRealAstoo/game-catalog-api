@@ -45,7 +45,7 @@ afterEach(async () => {
   }
 });
 
-describe("Games: Create", () => {
+describe("Game: Update", () => {
   beforeEach(() => {
     return fetch("http://localhost:3001/platforms", {
       method: "POST",
@@ -81,36 +81,44 @@ describe("Games: Create", () => {
       );
   });
 
-  test("It should be able to add a game", () => {
-    expect.assertions(2);
+  test("should be able to update a game that exists", () => {
+    expect.assertions(1);
 
-    return fetch("http://localhost:3001/games", {
-      method: "POST",
+    return fetch("http://localhost:3001/games/mario-kart-7", {
+      method: "PUT",
       body: JSON.stringify({
-        name: "The World Ends With You",
+        name: "Super Mario Kart 7",
         platform_slug: "nintendo-3ds",
       }),
       headers: { "Content-Type": "application/json" },
     })
-      .then((response) => {
-        expect(response.status).toBe(201);
-      })
-      .then(() => fetch("http://localhost:3001/games/the-world-ends-with-you"))
+      .then(() => fetch("http://localhost:3001/games/mario-kart-7"))
       .then((response) => response.json())
       .then((game) => {
-        expect(game).toMatchObject({
-          name: "The World Ends With You",
-          slug: "the-world-ends-with-you",
-          platform_slug: "nintendo-3ds",
-        });
+        expect(game).toMatchObject({ name: "Super Mario Kart 7" });
       });
   });
 
-  test("shouldn't be able to add a game if we don't send a name", () => {
+  test("should return a 404 if we try to update a game that does not exist", () => {
+    expect.assertions(1);
+
+    return fetch("http://localhost:3001/games/super-giga-mario-kart-x", {
+      method: "PUT",
+      body: JSON.stringify({
+        name: "Super Mario Kart 7",
+        platform_slug: "nintendo-3ds",
+      }),
+      headers: { "Content-Type": "application/json" },
+    }).then((response) => {
+      expect(response.status).toBe(404);
+    });
+  });
+
+  test("should return a 400 if we try to update a game without a name", () => {
     expect.assertions(2);
 
-    return fetch("http://localhost:3001/games", {
-      method: "POST",
+    return fetch("http://localhost:3001/games/mario-kart-7", {
+      method: "PUT",
       body: JSON.stringify({
         platform_slug: "nintendo-3ds",
       }),
@@ -125,13 +133,13 @@ describe("Games: Create", () => {
       });
   });
 
-  test("shouldn't be able to add a game if we don't send a platform_slug", () => {
+  test("should return a 400 if we try to update a game without a platform_slug", () => {
     expect.assertions(2);
 
-    return fetch("http://localhost:3001/games", {
-      method: "POST",
+    return fetch("http://localhost:3001/games/mario-kart-7", {
+      method: "PUT",
       body: JSON.stringify({
-        name: "The World Ends With You",
+        name: "Super Mario Kart 7",
       }),
       headers: { "Content-Type": "application/json" },
     })
@@ -141,43 +149,6 @@ describe("Games: Create", () => {
       })
       .then((body) => {
         expect(body.missing).toContain("platform_slug");
-      });
-  });
-
-  test("shouldn't be able to add a game if the platform does not exist", () => {
-    expect.hasAssertions();
-
-    return fetch("http://localhost:3001/games", {
-      method: "POST",
-      body: JSON.stringify({
-        name: "Metal Slug",
-        platform_slug: "super-nintendo",
-      }),
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((response) => {
-        expect(response.status).toBe(400);
-        return response.json();
-      })
-      .then((body) => {
-        expect(body.error).toBe("This platform does not exist");
-      });
-  });
-
-  test("shouldn't be able to add a game with a name that is already taken", () => {
-    expect.hasAssertions();
-
-    return fetch("http://localhost:3001/games", {
-      method: "POST",
-      body: JSON.stringify({ name: "Hades", platform_slug: "nintendo-switch" }),
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((response) => {
-        expect(response.status).toBe(400);
-        return response.json();
-      })
-      .then((body) => {
-        expect(body.error).toBe("A game of this name already exists");
       });
   });
 });
