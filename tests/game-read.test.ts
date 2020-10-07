@@ -17,7 +17,7 @@ const databaseUrl = process.env.MONGO_URL || "";
 beforeAll(async () => {
   const testURL = new URL(databaseUrl);
   testURL.pathname = testURL.pathname + "-test";
-  mongoClient = await MongoClient.connect(databaseUrl.toString(), options);
+  mongoClient = await MongoClient.connect(testURL.toString(), options);
   const db = mongoClient.db();
   const collections = await db.listCollections().toArray();
   for await (const collection of collections) {
