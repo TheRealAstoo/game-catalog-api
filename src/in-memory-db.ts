@@ -42,7 +42,7 @@ export function addGame(
   slug: string,
   platformSlug: string
 ): Game {
-  const platform = PLATFORMS.find((platform) => platform.slug === platformSlug);
+  const platform = findPlatform(platformSlug);
   if (platform) {
     const newId = lastGameId + 1;
     lastGameId = newId;

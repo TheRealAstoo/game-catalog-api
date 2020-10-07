@@ -1,20 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
 import bodyParser from "body-parser";
-import {
-  addGame,
-  addPlatform,
-  findGame,
-  findGamesByPlatformId,
-  findPlatform,
-  findPlatformByName,
-  getGames,
-  getPlatforms,
-  PlatformNotFoundError,
-  removeGame,
-  removePlatform,
-  updateGame,
-  updatePlatform,
-} from "./in-memory-db";
 import * as core from "express-serve-static-core";
 import slugify from "slug";
 import { Db } from "mongodb";
@@ -23,13 +8,16 @@ export function makeApp(db: Db): core.Express {
   const app = express();
   const jsonParser = bodyParser.json();
 
-  app.get("/platforms", (request: Request, response: Response) => {
-    const platforms = getPlatforms();
-    response.json(platforms);
+  app.get("/platforms", async (request: Request, response: Response) => {
+    const platformList = await db.collection("platforms").find().toArray();
+    response.json(platformList);
   });
 
-  app.get("/platforms/:slug", (request: Request, response: Response) => {
-    const platform = findPlatform(request.params.slug);
+  app.get("/platforms/:slug", async (request: Request, response: Response) => {
+    const platform = await db
+      .collection("platforms")
+      .findOne({ slug: request.params.slug });
+
     if (platform) {
       response.json(platform);
     } else {
@@ -37,33 +25,10 @@ export function makeApp(db: Db): core.Express {
     }
   });
 
-  app.post("/platforms", jsonParser, (request: Request, response: Response) => {
-    const errors = [];
-    if (!request.body.name) {
-      errors.push("name");
-    }
-    if (errors.length > 0) {
-      return response
-        .status(400)
-        .json({ error: "Missing required fields", missing: errors });
-    }
-
-    if (findPlatformByName(request.body.name)) {
-      return response
-        .status(400)
-        .json({ error: "A platform of this name already exists" });
-    }
-
-    const slug = slugify(request.body.name);
-    const createdPlatform = addPlatform(request.body.name, slug);
-
-    response.status(201).json(createdPlatform);
-  });
-
-  app.put(
-    "/platforms/:slug",
+  app.post(
+    "/platforms",
     jsonParser,
-    (request: Request, response: Response) => {
+    async (request: Request, response: Response) => {
       const errors = [];
       if (!request.body.name) {
         errors.push("name");
@@ -74,10 +39,52 @@ export function makeApp(db: Db): core.Express {
           .json({ error: "Missing required fields", missing: errors });
       }
 
-      const platform = findPlatform(request.params.slug);
+      const platform = await db
+        .collection("platforms")
+        .findOne({ name: request.body.name });
+
+      if (platform) {
+        return response
+          .status(400)
+          .json({ error: "A platform of this name already exists" });
+      }
+
+      const slug = slugify(request.body.name);
+      const createdPlatform = {
+        name: request.body.name,
+        slug: slug,
+      };
+
+      db.collection("platforms")
+        .insertOne(createdPlatform)
+        .then(() => {
+          response.status(201).json(createdPlatform);
+        });
+    }
+  );
+
+  app.put(
+    "/platforms/:slug",
+    jsonParser,
+    async (request: Request, response: Response) => {
+      const errors = [];
+      if (!request.body.name) {
+        errors.push("name");
+      }
+      if (errors.length > 0) {
+        return response
+          .status(400)
+          .json({ error: "Missing required fields", missing: errors });
+      }
+
+      const platform = await db
+        .collection("platforms")
+        .findOne({ slug: request.params.slug });
       if (platform) {
         const newPlatform = { ...platform, ...request.body };
-        updatePlatform(platform.slug, newPlatform);
+        await db
+          .collection("platforms")
+          .replaceOne({ _id: platform._id }, newPlatform);
 
         response.status(204).end();
       } else {
@@ -89,10 +96,12 @@ export function makeApp(db: Db): core.Express {
   app.delete(
     "/platforms/:slug",
     jsonParser,
-    (request: Request, response: Response) => {
-      const platform = findPlatform(request.params.slug);
+    async (request: Request, response: Response) => {
+      const platform = await db
+        .collection("platforms")
+        .findOne({ slug: request.params.slug });
       if (platform) {
-        removePlatform(platform.slug);
+        await db.collection("platforms").deleteOne({ _id: platform._id });
 
         response.status(204).end();
       } else {
@@ -101,18 +110,26 @@ export function makeApp(db: Db): core.Express {
     }
   );
 
-  app.get("/platforms/:slug/games", (request: Request, response: Response) => {
-    const games = findGamesByPlatformId(request.params.slug);
+  app.get(
+    "/platforms/:slug/games",
+    async (request: Request, response: Response) => {
+      const games = await db
+        .collection("games")
+        .find({ platform_slug: request.params.slug })
+        .toArray();
+      response.json(games);
+    }
+  );
+
+  app.get("/games", async (request: Request, response: Response) => {
+    const games = await db.collection("games").find().toArray();
     response.json(games);
   });
 
-  app.get("/games", (request: Request, response: Response) => {
-    const games = getGames();
-    response.json(games);
-  });
-
-  app.get("/games/:slug", (request: Request, response: Response) => {
-    const game = findGame(request.params.slug);
+  app.get("/games/:slug", async (request: Request, response: Response) => {
+    const game = await db.collection("games").findOne({
+      slug: request.params.slug,
+    });
     if (game) {
       response.json(game);
     } else {
@@ -120,61 +137,10 @@ export function makeApp(db: Db): core.Express {
     }
   });
 
-  app.post("/games", jsonParser, (request: Request, response: Response) => {
-    const errors = [];
-    if (!request.body.name) {
-      errors.push("name");
-    }
-    if (!request.body.platform_slug) {
-      errors.push("platform_slug");
-    }
-    if (errors.length > 0) {
-      return response
-        .status(400)
-        .json({ error: "Missing required fields", missing: errors });
-    }
-
-    const games = getGames();
-    if (games.find((game) => game.name === request.body.name)) {
-      return response
-        .status(400)
-        .json({ error: "A game of this name already exists" });
-    }
-
-    try {
-      const slug = slugify(request.body.name);
-      const createdGame = addGame(
-        request.body.name,
-        slug,
-        request.body.platform_slug
-      );
-
-      response.status(201).json(createdGame);
-    } catch (error) {
-      console.log(error, error instanceof PlatformNotFoundError);
-      if (error instanceof PlatformNotFoundError) {
-        response.status(400).json({ error: "This platform does not exist" });
-      } else {
-        response.status(500).send(error.message);
-      }
-    }
-  });
-
-  app.delete("/games/:slug", (request: Request, response: Response) => {
-    const game = findGame(request.params.slug);
-    if (game) {
-      removeGame(game.slug);
-
-      response.status(204).end();
-    } else {
-      response.status(404).end();
-    }
-  });
-
-  app.put(
-    "/games/:slug",
+  app.post(
+    "/games",
     jsonParser,
-    (request: Request, response: Response) => {
+    async (request: Request, response: Response) => {
       const errors = [];
       if (!request.body.name) {
         errors.push("name");
@@ -187,10 +153,72 @@ export function makeApp(db: Db): core.Express {
           .status(400)
           .json({ error: "Missing required fields", missing: errors });
       }
-      const game = findGame(request.params.slug);
+      const alreadyExistingGame = await db.collection("games").findOne({
+        name: request.body.name,
+        platform_slug: request.body.platform_slug,
+      });
+
+      if (alreadyExistingGame) {
+        return response
+          .status(400)
+          .json({ error: "A game of this name already exists" });
+      }
+
+      const platform = await db
+        .collection("platforms")
+        .findOne({ slug: request.body.platform_slug });
+
+      if (platform) {
+        const slug = slugify(request.body.name);
+        const createdGame = {
+          name: request.body.name,
+          slug: slug,
+          platform_slug: platform.slug,
+        };
+
+        db.collection("games").insertOne(createdGame);
+        response.status(201).json(createdGame);
+      } else {
+        response.status(400).json({ error: "This platform does not exist" });
+      }
+    }
+  );
+
+  app.delete("/games/:slug", async (request: Request, response: Response) => {
+    const game = await db
+      .collection("games")
+      .findOne({ slug: request.params.slug });
+    if (game) {
+      await db.collection("games").deleteOne({ _id: game._id });
+
+      response.status(204).end();
+    } else {
+      response.status(404).end();
+    }
+  });
+
+  app.put(
+    "/games/:slug",
+    jsonParser,
+    async (request: Request, response: Response) => {
+      const errors = [];
+      if (!request.body.name) {
+        errors.push("name");
+      }
+      if (!request.body.platform_slug) {
+        errors.push("platform_slug");
+      }
+      if (errors.length > 0) {
+        return response
+          .status(400)
+          .json({ error: "Missing required fields", missing: errors });
+      }
+      const game = await db
+        .collection("games")
+        .findOne({ slug: request.params.slug });
       if (game) {
         const newGame = { ...game, ...request.body };
-        updateGame(game.slug, newGame);
+        await db.collection("games").replaceOne({ _id: game._id }, newGame);
 
         response.status(204).end();
       } else {
