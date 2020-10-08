@@ -45,6 +45,12 @@ afterEach(async () => {
   }
 });
 
+function waitFor(seconds: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, seconds * 1000);
+  });
+}
+
 describe("Platforms: Create", () => {
   beforeEach(() => {
     return fetch("http://localhost:3001/platforms", {
@@ -68,6 +74,7 @@ describe("Platforms: Create", () => {
       body: JSON.stringify({ name: "Playstation 4" }),
       headers: { "Content-Type": "application/json" },
     })
+      .then(() => waitFor(1))
       .then(() => fetch("http://localhost:3001/platforms/playstation-4"))
       .then((response) => response.json())
       .then((platform) => {

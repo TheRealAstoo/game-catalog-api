@@ -45,6 +45,12 @@ afterEach(async () => {
   }
 });
 
+function waitFor(seconds: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, seconds * 1000);
+  });
+}
+
 describe("Games: Create", () => {
   beforeEach(() => {
     return fetch("http://localhost:3001/platforms", {
@@ -94,6 +100,7 @@ describe("Games: Create", () => {
     })
       .then((response) => {
         expect(response.status).toBe(201);
+        return waitFor(1);
       })
       .then(() => fetch("http://localhost:3001/games/the-world-ends-with-you"))
       .then((response) => response.json())
