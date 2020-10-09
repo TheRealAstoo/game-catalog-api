@@ -60,7 +60,6 @@ export function destroy(model: PlatformModel) {
     const platform = await model.findBySlug(request.params.slug);
     if (platform) {
       await model.destroy(platform.slug);
-
       response.status(204).end();
     } else {
       response.status(404).end();
