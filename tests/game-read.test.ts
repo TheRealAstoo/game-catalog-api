@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
-import { reset } from "../src/in-memory-db";
-import { makeApp } from "../src/server";
+import { reset } from "../src/server/in-memory-db";
+import { makeApp } from "../src/server/server";
 import { Server } from "http";
 import { MongoClient } from "mongodb";
 import * as dotenv from "dotenv";

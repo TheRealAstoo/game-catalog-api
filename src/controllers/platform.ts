@@ -5,7 +5,7 @@ import slugify from "slug";
 export function index(model: PlatformModel) {
   return async (request: Request, response: Response): Promise<void> => {
     const platformList = await model.findAll();
-    response.json(platformList);
+    response.render("platforms", response.json(platformList));
   };
 }
 
