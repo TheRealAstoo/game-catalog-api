@@ -1,0 +1,77 @@
+const platforms = [
+  {
+    code: 130,
+    name: "Nintendo Switch",
+    platform_logo: {
+      height: 167,
+      url: "//images.igdb.com/igdb/image/upload/t_logo_med/pl6b.png",
+      width: 714,
+    },
+    slug: "switch",
+    summary:
+      "Nintendo Switch is a hybrid console/tablet. The tablet becomes a console via a docking station connected to a tv set. Nintendo regards the concept as mainly a home gaming system rather than portable. The Switch features two wireless controllers, which may be used individually or attached to a grip to get a more traditional controller.",
+    url: "https://www.igdb.com/platforms/switch",
+
+    connectivity: "802.11 a/b/g/n/ac, Bluetooth 4.0 (TV Mode Only), 2x USB 3.0, 1x USB 2.0, 1x USB-C, HDMI",
+    cpu: "Custom NVIDIA Tegra",
+    graphics: "Nvidia GM20B Maxwell-based GPU @ 307.2 - 384 MHz while undocked, 307.2 - 768 MHz while docked",
+    media: "Nintendo Switch Game Card, microSD Card",
+    memory: "4GB LPDDR4",
+    online: "Nintendo Switch Online Service",
+    os: "Nintendo Switch system software",
+    output: "HDMI, 3.5mm headphone jack, DisplayPort over USB-C (internal)",
+    resolutions: "1280x720 on integrated screen, up to 1920x1080 through HDMI",
+    sound: "5.1 channel Linear PCM (HDMI), analog stereo (3.5mm headphone jack)",
+    storage: "32 GB NAND flash, expandable via microSD cards",
+    platform_version_release_date: "Mar 03, 2017",
+  },
+  {
+    code: 12,
+    name: "Xbox 360",
+    platform_logo: {
+      height: 1000,
+      url: "//images.igdb.com/igdb/image/upload/t_logo_med/pl6z.png",
+      width: 1000,
+    },
+    slug: "xbox360",
+    summary:
+      "Xbox 360 brings you a total games and entertainment experience. The largest library of games, including titles that get you right into the thick of it with Kinect. Plus, your whole family can watch HD movies, TV shows, live events, music, sports and more—across all your devices. Xbox 360 is the center of your games and entertainment universe.",
+    url: "https://www.igdb.com/platforms/xbox360",
+    connectivity: "Ethernet",
+    cpu: "3,2 GHz PowerPC Tri-Core ''Xenon''",
+    graphics: "ATI ''Xenos'' @ 500 MHz",
+    media: "DVD, Compact Dics, Digital Download",
+    memory: "512 MB GDDR3 @ 700 MHz",
+    online: "Xbox Live",
+    output: "HDMI",
+    platform_version_release_date: "Nov 22, 2005",
+    resolutions: "480i, 480p, 720p, 1080i, 1080p",
+    sound: "Analog Stereo, Dolby Digital 5,1",
+    storage: "20 GB, 60 GB, 120 GB, 250 GB",
+  },
+  {
+    code: 48,
+    name: "PlayStation 4",
+    platform_logo: {
+      height: 1000,
+      url: "//images.igdb.com/igdb/image/upload/t_logo_med/pl6e.png",
+      width: 1000,
+    },
+    slug: "ps4",
+    summary:
+      "The PlayStation 4 system opens the door to an incredible journey through immersive new gaming worlds and a deeply connected gaming community. PS4 puts gamers first with an astounding launch line-up and over 180 games in development. Play amazing top-tier blockbusters and innovative indie hits on PS4. Developer inspired, gamer focused.",
+    url: "https://www.igdb.com/platforms/ps4--1",
+    connectivity: "802.11 b/g/n Wireless, Bluetooth 2.1, USB 3.0, Ethernet 10/100/1000",
+    cpu: "Semi-custom 8-core AMD x86-64 CPU",
+    graphics: "Semi-custom AMD Radeon GPU",
+    main_manufacturer: 2123,
+    media: "Blu-ray Disc, DVD",
+    memory: "8 GB GDDR5",
+    online: "PlayStation Network",
+    os: "Orbis OS",
+    platform_version_release_date: "Nov 15, 2013",
+    storage: "Hard drive, 500GB (user upgradeable, supports SSD)",
+  },
+];
+
+export default platforms;

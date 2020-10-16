@@ -1,11 +1,20 @@
 import { Request, Response } from "express";
 import { PlatformModel } from "../models/platform";
 import slugify from "slug";
+import express from "express"
+const clientWantsJson = (request: express.Request): boolean => request.get("accept") === "application/json";
 
 export function index(model: PlatformModel) {
   return async (request: Request, response: Response): Promise<void> => {
     const platformList = await model.findAll();
-    response.render("platforms", response.json(platformList));
+    const colors = ["is-primary", "is-warning", "is-info", "is-danger", "is-success"];
+    
+
+    if (clientWantsJson(request)) {
+      response.json(platformList)
+    } else {
+      response.render("platforms", { platformList, colors });
+    }
   };
 }
 

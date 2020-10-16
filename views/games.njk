@@ -1,0 +1,27 @@
+{% extends "index.njk" %}
+{% block css %}
+  <link rel="stylesheet" href="/assets/styles/games.css" />
+{% endblock %}
+
+{% block content %}
+  <div class="card-columns">
+    {% for game in games %}
+      <div class="tile game-card">
+        <article class="notification {{ colors | random }}">
+          <p class="title game-name">{{ game.name }}</p>
+          <div class="content game-summary">
+            {{ game.summary }}
+          </div>
+          <p>...</p>
+          <div class="logo-center">
+            <img class="game-logo" src={{ game.cover.url }}>
+          </div>
+          <div class="d-flex justify-content-around">
+            <a href="games/{{game.slug}}"><button class="btn btn-outline-dark retro" style="margin-top: 10px;">Plus d'infos</button></a>
+          </div>
+        </article>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
+

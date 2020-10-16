@@ -2,11 +2,21 @@ import { Request, Response } from "express";
 import { GameModel } from "../models/game";
 import { PlatformModel } from "../models/platform";
 import slugify from "slug";
+import express from "express";
+
+const clientWantsJson = (request: express.Request): boolean => request.get("accept") === "application/json";
 
 export function index(model: GameModel) {
   return async (request: Request, response: Response): Promise<void> => {
     const games = await model.findAll()
+    const colors = ["is-primary", "is-warning", "is-info", "is-danger", "is-success"];
     response.json(games);
+
+    if (clientWantsJson(request)) {
+      response.json(games)
+    } else {
+      response.render("games", { games, colors });
+    }
   }
 }
 

@@ -1,0 +1,46 @@
+h1 {
+  text-align: center;
+  margin-top: 40px;
+  color: white !important;
+  font-family: 'Rubik Mono One', sans-serif;
+  font-size: 2rem !important;
+}
+
+#controller, #heart {
+  height: 10rem;
+  width: auto;
+	overflow: hidden;
+	transform: translatey(0px);
+	animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+	0% {
+		transform: translatey(0px);
+	}
+	50% {
+		transform: translatey(-20px);
+	}
+	100% {
+		transform: translatey(0px);
+	}
+}
+
+#controller {
+  position: absolute;
+  right: 2rem;
+  top: 30vh;
+}
+
+#heart {
+  position: absolute;
+  left: 2rem;
+  top: 40vh;
+}
+
+.search {
+  position: absolute;
+  left: 25%;
+  width: 50%;
+  top: 20vh;
+}

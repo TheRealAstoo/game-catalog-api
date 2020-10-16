@@ -1,0 +1,30 @@
+#nav {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  background-color: #00d1b2;
+  color: #fff;
+}
+
+a {
+  text-decoration: none !important;
+  font-family: 'Press Start 2P', cursive;
+  color: #fff;
+}
+
+#company-name {
+  font-family: 'Rubik Mono One', sans-serif;
+  padding-top: 0.75rem;
+}
+
+#burger {
+  color: white;
+}
+
+.links {
+  border-bottom: 0 solid #00ff99;
+  transition: border-bottom 300ms ease-in-out, padding-bottom 300ms ease-in-out;
+}
+
+.links:hover {
+  padding-bottom: 0.1rem;
+  border-bottom: 0.1rem solid #00ff99;
+}

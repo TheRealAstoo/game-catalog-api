@@ -6,17 +6,24 @@ import * as platformController from "../controllers/platform";
 import { PlatformModel } from "../models/platform";
 import * as gameController from "../controllers/game";
 import { GameModel } from "../models/game";
+import * as nunjucks from "nunjucks";
 
 
 export function makeApp(db: Db): core.Express {
   const app = express();
   const jsonParser = bodyParser.json();
+  nunjucks.configure("views", {
+    autoescape: true,
+    express: app
+  });
+  app.use("/assets", express.static("public"));
+  app.set("view engine", "njk");
   const platformModel = new PlatformModel(db.collection("platforms"));
   const gameModel = new GameModel(db.collection("games"))
 
-  app.get('/', (req, res) => {
-    res.render('/Users/louisfanien/Workspace/game-catalog-mvc/game-catalog-deployment/src/views/main.hbs');
-  })
+  app.get("/", (request, response) => {
+    response.render("main");
+  });
   app.get("/platforms", platformController.index(platformModel));
   app.get("/platforms/:slug", platformController.show(platformModel));
   app.post("/platforms", jsonParser, platformController.create(platformModel));

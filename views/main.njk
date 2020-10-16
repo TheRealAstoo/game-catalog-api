@@ -1,0 +1,13 @@
+{% extends "index.njk" %}
+{% block css %}
+  <link rel="stylesheet" href="/assets/styles/main.css" />
+{% endblock %}
+
+{% block content %}
+  <h1 class="title is-1">Bienvenue sur le Game Catalog</h1>
+  <div class="search">
+    {% include "search.njk" %}
+  </div>
+  <img id="controller" src="/assets/images/controller-retro.png">
+  <img id="heart" src="/assets/images/heart-retro.png">
+{% endblock %}

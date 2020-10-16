@@ -1,0 +1,31 @@
+{% extends "index.njk" %}
+{% block css %}
+  <link rel="stylesheet" href="/assets/styles/platforms.css" />
+{% endblock %}
+
+{% block content %}
+  <div class="tile is-ancestor">
+    <div class="tile is-vertical is-8">
+      <div class="tile">
+        
+    {% for platform in platformList %}
+      <div class="tile is-parent justify-content-center align-items-center platform-card">
+        <article class="tile is-child notification {{ colors | random }}">
+          <p class="title platform-name">{{ platform.name }}</p>
+          <div class="content platform-summary">
+            {{ platform.summary }}
+          </div>
+          <p>...</p>
+          <div class="logo-center">
+            <img class="platform-logo" src={{ platform.platform_logo.url }}>
+          </div>
+          <div class="d-flex justify-content-around">
+            <a href="platforms/{{platform.slug}}"><button class="btn btn-outline-dark">Plus d'infos</button></a>
+          </div>
+        </article>
+        </div>
+    {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

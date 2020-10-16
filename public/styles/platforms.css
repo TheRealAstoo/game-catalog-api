@@ -1,0 +1,30 @@
+.platform-name {
+  margin-bottom: 0.5rem !important;
+}
+
+.platform-summary {
+  overflow: hidden;
+  height: 117px;
+  margin: 0px !important;
+}
+
+.platform-card {
+  width: 300px !important;
+  height: 450px !important;
+  padding: 1rem;
+}
+
+.platform-logo {
+  height: 100px;
+  width: 100px;
+  margin: auto;
+}
+
+.logo-center {
+  text-align: center;
+}
+
+p {
+  text-align: center;
+  margin-bottom: 0px !important;
+}

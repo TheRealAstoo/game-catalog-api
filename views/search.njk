@@ -1,0 +1,34 @@
+{% block css %}
+  <link rel="stylesheet" href="/assets/styles/search.css" />
+{% endblock %}
+
+<form>
+  <div class="form-row">
+    <div class="input-group">
+      <input type="text" class="form-control" placeholder="Écrire ici.. :)" id="text-area" aria-label="Text input with dropdown button">
+      <div class="input-group-append">
+        <select class="btn btn-dark dropdown-toggle" id="type" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Type de recherche</select>
+        <div class="dropdown-menu dark" >
+          <a class="dropdown-item dark" value="Platform">Platform</a>
+          <div role="separator" class="dropdown-divider"></div>
+          <a class="dropdown-item dark" value="Game">Game</a>
+        </div>
+        <button class="btn btn-dark" id="submit-btn" onClick="sendUser()">LANCER LA RECHERCHE</button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+
+  function sendUser() {
+    const queryValue = document.querySelector("#text-area").value;
+    const selectValue = document.querySelector(".dropdown-menu dark").value;
+    return window.location.href = `/${queryValue}/${selectValue}`
+  };
+
+  function getValue() {
+    let e = document.getElementById("ddlViewBy");
+  }
+
+</script>
